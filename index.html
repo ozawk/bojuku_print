@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>某某塾模試印刷ユーティリティ</title>
+        <style>
+            @media print {
+                .print_none {
+                    display: none;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <form class="print_none">
+            <h1 style="color: #0075c1">
+                某某塾<span style="color: #00c110">
+                    模試印刷ユーティリティ</span
+                >
+            </h1>
+            <h2 style="color: #00c110">
+                PDFで保存しない 印刷した媒体を模試解答のみに使用する
+            </h2>
+            <h1>１，URLを入力する</h1>
+            <input
+                type="text"
+                name="name"
+                placeholder="https://XXXX.XXXXX-XXXX.ac.jp <-ｺｺの部分"
+                style="width: 100%"
+            />
+            <h1>２，ここにアクセスして教科IDとページ数を確認する</h1>
+            <button
+                style="width: 100%; height: 20px; font-size: 20px"
+                type="button"
+                onclick="window.open(document.querySelector('input[name=name]').value+'/contents/masters/subjects_master.json')"
+            >
+                確認
+            </button>
+            <h1>３，教科IDとページ数を入力する</h1>
+            <input type="text" name="sub" placeholder="教科ID <-項目:id(3桁)" />
+            <input
+                type="text"
+                name="page"
+                placeholder="ページ数 <-項目:pageCount"
+            />
+            <h1>４，印刷ボタンを押す</h1>
+            <button type="button" onclick="printImage()">印刷</button>
+            <h1>5，印刷設定：偶数ページのみ印刷</h1>
+            <h1 style="color: crimson">(C)2025 Ozawa Kodai</h1>
+        </form>
+        <div id="imageContainer"></div>
+        <script>
+            async function printImage() {
+                const ur =
+                    document.querySelector('input[name="name"]').value +
+                    "/contents/subjects/" +
+                    document.querySelector('input[name="sub"]').value;
+                let imageUrls = [];
+                for (
+                    let i = 1;
+                    i <= document.querySelector('input[name="page"]').value;
+                    i++
+                ) {
+                    const num = i.toString().padStart(4, "0");
+                    imageUrls.push(ur + "/" + num + ".jpg");
+                }
+                console.log(imageUrls);
+                const imageContainer =
+                    document.getElementById("imageContainer");
+                for (let i = 0; i < imageUrls.length; i++) {
+                    const img = document.createElement("img");
+                    const div = document.createElement("div");
+                    if (i < imageUrls.length - 1) {
+                        imageContainer.appendChild(div);
+                    }
+                    div.style.pageBreakAfter = "always";
+                    img.src = imageUrls[i % imageUrls.length];
+                    img.alt = `kawai${i + 1}`;
+                    imageContainer.appendChild(img);
+                    await img.decode();
+                }
+                window.print();
+            }
+        </script>
+    </body>
+</html>
